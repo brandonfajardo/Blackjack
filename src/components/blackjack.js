@@ -16,7 +16,7 @@ class Blackjack extends Component {
         super(props)
         
         this.state = {
-            dealt: false
+            cardsDealt: false
         }
     }
 
@@ -32,7 +32,7 @@ class Blackjack extends Component {
         if (this.props.bet == 0){
             alert('Please place a bet')
         } else {
-            this.setState({ dealt: true })
+            this.setState({ cardsDealt: true })
             axios.get('https://deckofcardsapi.com/api/deck/auoeew5rp8rw/shuffle/?deck_count=1')
             
             setTimeout(() => {
@@ -55,57 +55,97 @@ class Blackjack extends Component {
         this.props.distributeCard('player')
     }
 
-    render() {
+    renderPreStart() {
         return (
             <div>
-                {!this.props.start && (
+                <h1>Blackjack</h1>
+                <p>How much would you like to start out with?</p>
+                <span onClick={() => this.startGame(100)} style={styles.Money}>$100</span>
+                <span onClick={() => this.startGame(500)} style={styles.Money}>$500</span>
+                <span onClick={() => this.startGame(1000)} style={styles.Money}>$1000</span>
+            </div>
+        )
+    }
+
+    renderPostStart() {
+        return (
+            <div>
+                <h2>Balance: ${this.props.balance}</h2>
+                <h3>Bet: ${this.props.bet}</h3>
+                {!this.state.cardsDealt && (
                     <div>
-                        <h1>Blackjack</h1>
-                        <p>How much would you like to start out with?</p>
-                        <span onClick={() => this.startGame(100)} style={styles.Money}>$100</span>
-                        <span onClick={() => this.startGame(500)} style={styles.Money}>$500</span>
-                        <span onClick={() => this.startGame(1000)} style={styles.Money}>$1000</span>
+                        <span onClick={() => this.betAmount(5)} style={styles.Money}>$5</span>
+                        <span onClick={() => this.betAmount(25)} style={styles.Money}>$25</span>
+                        <span onClick={() => this.betAmount(100)} style={styles.Money}>$100</span>
+                        <button onClick={() => this.distributeCards()}>Deal Cards</button>
                     </div>
                 )}
+            </div>
+        )
+    }
+
+    renderPlayOptions() {
+        if (this.props.playersHand.length >= 2 && this.props.dealersHand.length >= 2){
+            return (
+                <div style={{marginTop: '20px'}}>
+                    <button style={{marginRight: '5px'}} onClick={() => this.Hit()}>Hit</button>
+                    <button style={{marginRight: '5px'}}>Stay</button>
+                    <button style={{marginRight: '5px'}}>Double Down</button>
+                </div>
+            )
+        }
+    }
+
+    renderDealersCards() {
+        return (
+            <div>
+                <p>Dealer's cards:</p>
+                {this.props.dealersHand.map((card, i) => {
+                    if (i == 1){
+                        return <div style={{display: 'inline-block', border: '1px solid lightgray', height: '140px', width: '100px', borderRadius: '5px', marginBottom: '-66px', marginLeft: '5px'}}></div>
+                    }
+                    return <img style={{width: '100px'}} src={card.image} />
+                })}
+            </div>
+        )
+    }
+
+    renderPlayersCards() {
+        return (
+            <div>
+                <p>Your cards:</p>
+                {this.props.playersHand.map((card) => {
+                    return (
+                        <img style={{width: '100px', marginRight: '5px'}} src={card.image} />
+                    )
+                })}
+            </div>
+        )
+    }
+
+    render() {
+        const {
+            dealersHand,
+            playersHand,
+            start,
+        } = this.props 
+
+        const { cardsDealt } = this.state 
+        return (
+            <div>
+                {!start && this.renderPreStart()}    
+                {start && this.renderPostStart()}
                 
-                {this.props.start && (
+                <br /><br />
+                
+                {cardsDealt && (
                     <div>
-                        <h2>Balance: ${this.props.balance}</h2>
-                        <h3>Bet: ${this.props.bet}</h3>
-                        {!this.state.dealt && (
-                            <div>
-                                <span onClick={() => this.betAmount(5)} style={styles.Money}>$5</span>
-                                <span onClick={() => this.betAmount(25)} style={styles.Money}>$25</span>
-                                <span onClick={() => this.betAmount(100)} style={styles.Money}>$100</span>
-                            </div>
-                        )}
-                        <br /><br />
-                        
-                        {!this.state.dealt && <button onClick={() => this.distributeCards()}>Deal Cards</button>}
-
-                        <p>Dealer's cards: ()</p>
-                        {this.props.dealersHand.map((card, i) => {
-                            if (i == 1){
-                                return <div style={{display: 'inline-block', border: '1px solid lightgray', height: '140px', width: '100px', borderRadius: '5px', marginBottom: '-66px', marginLeft: '5px'}}></div>
-                            }
-                            return <img style={{width: '100px'}} src={card.image} />
-                        })}
-
-                        <p>Your cards:</p>
-                        {this.props.playersHand.map((card) => {
-                            return (
-                                <img style={{width: '100px', marginRight: '5px'}} src={card.image} />
-                            )
-                        })}
-
-                        {this.props.playersHand.length >= 2 && this.props.dealersHand.length >= 2 && (
-                            <div>
-                                <button onClick={() => this.Hit()} style={{display: 'block', marginTop: '20px'}}>Hit</button>
-                                <button>Double Down</button>
-                            </div>
-                        )}
+                        {this.renderDealersCards()}
+                        {this.renderPlayersCards()}
                     </div>
-                )}
+                )}        
+                
+                {playersHand.length >= 2 && dealersHand.length >= 2 && this.renderPlayOptions()}
             </div>
         )
     }
