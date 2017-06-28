@@ -83,7 +83,7 @@ class Blackjack extends Component {
                         
                         {!this.state.dealt && <button onClick={() => this.distributeCards()}>Deal Cards</button>}
 
-                        <p>Dealer's cards:</p>
+                        <p>Dealer's cards: ()</p>
                         {this.props.dealersHand.map((card, i) => {
                             if (i == 1){
                                 return <div style={{display: 'inline-block', border: '1px solid lightgray', height: '140px', width: '100px', borderRadius: '5px', marginBottom: '-66px', marginLeft: '5px'}}></div>

@@ -40,13 +40,13 @@ export default (state = initialState, action) => {
                 return {
                     ...state,
                     playersHand: state.playersHand.concat(action.payload),
-                    playerVal: state.playerVal + faceOrAce || parseInt(action.payload.value)
+                    playerVal: state.playerVal + (faceOrAce || parseInt(action.payload.value))
                 }
             } else if (action.receiver == 'dealer'){
                return {
                     ...state,
                     dealersHand: state.dealersHand.concat(action.payload),
-                    dealerVal: state.dealerVal + faceOrAce || parseInt(action.payload.value)
+                    dealerVal: state.dealerVal + (faceOrAce || parseInt(action.payload.value))
                 } 
             }
 
