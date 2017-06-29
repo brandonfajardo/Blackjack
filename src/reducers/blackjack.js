@@ -11,6 +11,7 @@ const initialState = {
     dealersHand: [],
     playersHand: [],
     dealerVal: 0,
+    dealerFirstCardVal: null,
     playerVal: 0
 }
 
@@ -43,11 +44,20 @@ export default (state = initialState, action) => {
                     playerVal: state.playerVal + (faceOrAce || parseInt(action.payload.value))
                 }
             } else if (action.receiver == 'dealer'){
-               return {
-                    ...state,
-                    dealersHand: state.dealersHand.concat(action.payload),
-                    dealerVal: state.dealerVal + (faceOrAce || parseInt(action.payload.value))
-                } 
+                if (state.dealerVal == 0){ 
+                    return {
+                        ...state,
+                        dealersHand: state.dealersHand.concat(action.payload),
+                        dealerFirstCardVal: faceOrAce || parseInt(action.payload.value),
+                        dealerVal: state.dealerVal + (faceOrAce || parseInt(action.payload.value))
+                    }
+                } else {
+                    return {
+                        ...state,
+                        dealersHand: state.dealersHand.concat(action.payload),
+                        dealerVal: state.dealerVal + (faceOrAce || parseInt(action.payload.value))
+                    } 
+                }
             }
 
         default:

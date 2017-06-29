@@ -16,7 +16,8 @@ class Blackjack extends Component {
         super(props)
         
         this.state = {
-            cardsDealt: false
+            cardsDealt: false,
+            playerStays: false
         }
     }
 
@@ -40,19 +41,23 @@ class Blackjack extends Component {
             },0)
             setTimeout(() => {
                 this.props.distributeCard('dealer')
-            },1500)
+            },1000)
             setTimeout(() => {
                 this.props.distributeCard('player')
-            },3000)
+            },2000)
             setTimeout(() => {
                 this.props.distributeCard('dealer')
-                console.log("PROPS", this.props)
-            },4500)
+            },3000)
         }
     }
 
     Hit() {
         this.props.distributeCard('player')
+        if (this.props.playerVal > 17){
+            setTimeout(() => {
+                alert('BUST!')
+            }, 1000)
+        }
     }
 
     renderPreStart() {
@@ -65,6 +70,10 @@ class Blackjack extends Component {
                 <span onClick={() => this.startGame(1000)} style={styles.Money}>$1000</span>
             </div>
         )
+    }
+
+    stay() {
+        this.setState({ playerStays: true })
     }
 
     renderPostStart() {
@@ -89,7 +98,7 @@ class Blackjack extends Component {
             return (
                 <div style={{marginTop: '20px'}}>
                     <button style={{marginRight: '5px'}} onClick={() => this.Hit()}>Hit</button>
-                    <button style={{marginRight: '5px'}}>Stay</button>
+                    <button onClick={() => this.stay()} style={{marginRight: '5px'}}>Stay</button>
                     <button style={{marginRight: '5px'}}>Double Down</button>
                 </div>
             )
@@ -98,13 +107,16 @@ class Blackjack extends Component {
 
     renderDealersCards() {
         return (
-            <div>
-                <p>Dealer's cards:</p>
+            <div style={{marginBottom: '30px'}}>
+                <p>Dealer's cards {this.props.dealersHand.length >= 1 && <strong>({this.state.playerStays ? this.props.dealerVal : this.props.dealerFirstCardVal})</strong>}:</p>
                 {this.props.dealersHand.map((card, i) => {
-                    if (i == 1){
-                        return <div style={{display: 'inline-block', border: '1px solid lightgray', height: '140px', width: '100px', borderRadius: '5px', marginBottom: '-66px', marginLeft: '5px'}}></div>
+                    if (i == 1){ // do not reveal second card unless player has stayed or has busted
+                        return this.state.playerStays ?
+                            <img style={{width: '100px'}} src={card.image} />
+                            : 
+                            <div style={{display: 'inline-block', border: '1px solid lightgray', height: '140px', width: '100px', borderRadius: '5px', marginBottom: '-66px', marginLeft: '5px'}} />
                     }
-                    return <img style={{width: '100px'}} src={card.image} />
+                    return <img style={{width: '100px', marginRight: '5px'}} src={card.image} />
                 })}
             </div>
         )
@@ -113,7 +125,7 @@ class Blackjack extends Component {
     renderPlayersCards() {
         return (
             <div>
-                <p>Your cards:</p>
+                <p>Your cards {this.props.playersHand.length >= 1 && <strong>({this.props.playerVal})</strong>}:</p>
                 {this.props.playersHand.map((card) => {
                     return (
                         <img style={{width: '100px', marginRight: '5px'}} src={card.image} />
@@ -142,10 +154,9 @@ class Blackjack extends Component {
                     <div>
                         {this.renderDealersCards()}
                         {this.renderPlayersCards()}
+                        {playersHand.length >= 2 && dealersHand.length >= 2 && this.renderPlayOptions()}
                     </div>
-                )}        
-                
-                {playersHand.length >= 2 && dealersHand.length >= 2 && this.renderPlayOptions()}
+                )}     
             </div>
         )
     }
@@ -158,7 +169,10 @@ const mapStateToProps = state => {
         start: state.blackJack.start,
         bet: state.blackJack.betAmount,
         playersHand: state.blackJack.playersHand,
-        dealersHand: state.blackJack.dealersHand
+        dealersHand: state.blackJack.dealersHand,
+        playerVal: state.blackJack.playerVal,
+        dealerVal: state.blackJack.dealerVal,
+        dealerFirstCardVal: state.blackJack.dealerFirstCardVal
     }   
 }
 
