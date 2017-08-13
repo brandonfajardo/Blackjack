@@ -1,7 +1,9 @@
 import {
     START_GAME_AND_SET_BALANCE,
     BET_AMOUNT,
-    DISTRIBUTE_CARD
+    DISTRIBUTE_CARD,
+    DEALING_CARDS,
+    UPDATE_GAME_RESULT
 } from '../actions'
 
 const initialState = {
@@ -12,11 +14,23 @@ const initialState = {
     playersHand: [],
     dealerVal: 0,
     dealerFirstCardVal: null,
-    playerVal: 0
+    playerVal: 0,
+    cardsDealt: false,
+    gameResult: null
 }
 
 export default (state = initialState, action) => {
     switch(action.type){
+        case UPDATE_GAME_RESULT: 
+            return {
+                ...state,
+                gameResult: action.payload
+            }
+        case DEALING_CARDS:
+            return {
+                ...state,
+                cardsDealt: true
+            }
         case START_GAME_AND_SET_BALANCE:
             return {
                 ...state,
